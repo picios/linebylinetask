@@ -1,6 +1,6 @@
 <?php
 
-namespace picios/linebylinetask;
+namespace Picios\Lib;
 
 /**
  * LineByLineTask
