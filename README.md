@@ -1,6 +1,6 @@
 # LineByLineTask
 
-The script allows you to stagger complex tasks on individual lines of the text file
+The class allows to stagger complex tasks processed on individual lines of the text file
 
 Sample code:
 

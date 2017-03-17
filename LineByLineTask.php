@@ -1,9 +1,9 @@
 <?php
 
-namespace Picios\Lib;
-
 /**
- * LineByLineTask
+ * Line By Line Task
+ * 
+ * The class allows to stagger complex tasks processed on individual lines of the text file
  * Reads one line of an input file per one call
  * Runs limited times per one PHP process
  * Remebers the read pointer and continues from the last stop point
@@ -11,7 +11,13 @@ namespace Picios\Lib;
  * @version 1.0.1
  * @author Picios
  * @copyright (c) 2017, Picios
+ * @link pcios.pl website
+ * @link https://github.com/picios/linebylinetask github repository
+ * @license https://github.com/github/hubot/blob/master/LICENSE.md MIT License
  */
+
+namespace Picios\Lib;
+
 class LineByLineTask
 {
 
