@@ -8,7 +8,7 @@
  * Runs limited times per one PHP process
  * Remebers the read pointer and continues from the last stop point
  * 
- * @version 1.0.2
+ * @version 1.0.3
  * @author Picios
  * @copyright (c) 2017, Picios
  * @link pcios.pl website
