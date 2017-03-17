@@ -1,8 +1,8 @@
-# LineByLineTask
+# Line By Line Task
 
 The class allows to stagger complex tasks processed on individual lines of the text file
 
-Sample code:
+## Sample code
 
 ``` php
 require_once 'LineByLineTask.php';
@@ -19,3 +19,16 @@ Then refresh your script in a browser. Each time you will get a new portion of l
 $task->setLimit(4);
 ```
 
+The class requires a writtable directory to save a temporary file. When the filename is not passed, it' tries to create the default one based on input file name in /tmp/ directory.
+
+## Testing
+
+To test the class, run:
+
+```
+phpunit test
+```
+
+## Homepage
+
+You can read more at [Picios.pl](http://picios.pl/line-line-heavy-task/)

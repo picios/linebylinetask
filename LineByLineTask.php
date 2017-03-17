@@ -8,7 +8,7 @@
  * Runs limited times per one PHP process
  * Remebers the read pointer and continues from the last stop point
  * 
- * @version 1.0.1
+ * @version 1.0.2
  * @author Picios
  * @copyright (c) 2017, Picios
  * @link pcios.pl website
@@ -23,6 +23,12 @@ class LineByLineTask
 
 	/**
 	 *
+	 * @var string 
+	 */
+	private $inputfilename;
+	
+	/**
+	 *
 	 * @var resource 
 	 */
 	private $inputHandle;
@@ -31,7 +37,7 @@ class LineByLineTask
 	 *
 	 * @var resource 
 	 */
-	private $outputHandle;
+	private $outputHandle = null;
 
 	/**
 	 *
@@ -57,21 +63,34 @@ class LineByLineTask
 	 * @param callable $callback	callable function((string) $line, (resource) $outputHandle)
 	 * 								The main task function, which will be called after
 	 * 								a line beeing read
-	 * @param string $outfilename	outpuf file path. May be helpfull for loging or as
-	 * 								a main result keeper
 	 * @param string $tmpfilename	tmp file path. In this file will be written current
 	 * 								input file pointer position.
 	 */
-	public function __construct($infilename, $callback, $outfilename = null, $tmpfilename = 'tmp.txt')
+	public function __construct($infilename, $callback, $tmpfilename = null)
 	{
-		$this->checkFiles($infilename, $outfilename, $tmpfilename);
-		$this->inputHandle = fopen($infilename, "r");
-		$this->outputHandle = null !== $outfilename ? fopen($outfilename, "a") : null;
-		$this->tmpfilename = $tmpfilename;
+		$this->setInputFile($infilename);
+		$this->checkIfWrittable($tmpfilename);
+		$this->setTmpFile($tmpfilename);
 		$this->callback = $callback;
+	}
+	
+	/**
+	 * Set input file
+	 * 
+	 * @param string $filename
+	 * @return \LineByLineTask
+	 */
+	public function setInputFile($filename)
+	{
+		$this->checkIfReadable($filename);
+		$this->inputfilename = $filename;
+		$this->inputHandle = fopen($filename, "r");
+		
+		return $this;
 	}
 
 	/**
+	 * Optional
 	 * 
 	 * @param integer $limit	limit of operations per one php process
 	 * @return \LineByLineTask
@@ -80,6 +99,33 @@ class LineByLineTask
 	{
 		$this->limit = $limit;
 
+		return $this;
+	}
+	
+	/**
+	 * Optional output file
+	 * It's handle will be passed to callback function as a second argument
+	 * 
+	 * @param string $filename
+	 * @return \LineByLineTask
+	 */
+	public function setOutputFile($filename)
+	{
+		$this->checkIfWrittable($filename);
+		$this->outputHandle = fopen($filename, "a");
+		
+		return $this;
+	}
+	
+	/**
+	 * 
+	 * @param resource $outputHandle
+	 * @return \LineByLineTask
+	 */
+	public function setOutput($outputHandle)
+	{
+		$this->outputHandle = $outputHandle;
+		
 		return $this;
 	}
 
@@ -104,6 +150,29 @@ class LineByLineTask
 			}
 		}
 		$this->stop();
+	}
+	
+	/**
+	 * Resets read pointer
+	 */
+	public function reset()
+	{
+		file_put_contents($this->tmpfilename, '0');
+		fseek($this->inputHandle, 0);
+	}
+	
+	/**
+	 * 
+	 * @param type $filename
+	 */
+	protected function setTmpFile($filename = null)
+	{
+		if (null === $filename) {
+			// creating tmp file attempt
+			$this->tmpfilename = '/tmp/' . md5($this->inputfilename) . '.txt';
+		} else {
+			$this->tmpfilename = $filename;
+		}
 	}
 
 	/**
@@ -130,30 +199,29 @@ class LineByLineTask
 		file_put_contents($this->tmpfilename, ftell($this->inputHandle));
 		fclose($this->inputHandle);
 	}
-
+	
 	/**
 	 * 
-	 * @param string $infilename
-	 * @param string $outfilename
-	 * @param string $tmpfilename
+	 * @param string $filename
 	 * @throws Exception
 	 */
-	protected function checkFiles($infilename, $outfilename, $tmpfilename)
+	protected function checkIfReadable($filename)
 	{
-		if (!is_readable($infilename)) {
-			throw new Exception("Unable to locate an input file {$infilename}");
+		if (!is_readable($filename)) {
+			throw new \Exception("Unable to locate file {$filename}");
 		}
-
-		if (null !== $outfilename) {
-			$outpath = realpath(dirname($outfilename));
-			if (!is_writable($outpath)) {
-				throw new Exception("Unable to write output to {$outpath}");
-			}
-		}
-
-		$tmppath = realpath(dirname($tmpfilename));
+	}
+	
+	/**
+	 * 
+	 * @param string $filename
+	 * @throws Exception
+	 */
+	protected function checkIfWrittable($filename)
+	{
+		$tmppath = realpath(dirname($filename));
 		if (!is_writable($tmppath)) {
-			throw new Exception("Unable to write tmp data to {$tmppath}");
+			throw new \Exception("Unable to write data to {$tmppath}");
 		}
 	}
 
