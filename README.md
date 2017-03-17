@@ -1,4 +1,4 @@
-# Line By Line Task
+# PHP Line By Line Task
 
 The class allows to stagger complex tasks processed on individual lines of the text file
 
