@@ -13,3 +13,9 @@ $task = new Picios\Lib\LineByLineTask('bigfile.csv', function($line, $op) {
 $task->setLimit(4)->run();
 ```
 
+Then refresh your script in a browser. Each time you will get a new portion of lines limited by setLimit() method
+
+``` php
+$task->setLimit(4);
+```
+
